@@ -1,4 +1,4 @@
-Bibliotecas utilizadas:
+Bibliotecas não padrões utilizadas:
 
 -Pygame
 -cv2 (OPEN-CV)
