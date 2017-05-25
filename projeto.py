@@ -23,6 +23,7 @@ def game_intro():
 	men = msg("Projeto Python 2017.1", "freesansbold.ttf", 50, (display_width/2, display_height/6), gray)
 	men2 = msg("Diógenes Wallis", "freesansbold.ttf", 20, (display_width/3, display_height/2 - 90), gray)
 	men3 = msg("Rafael Campello", "freesansbold.ttf", 20, (display_width/3, display_height/2 - 40), gray)
+	men5 = msg("Professor: Hermano Cabral", "freesansbold.ttf", 20, (display_width/3 + 53, display_height/2+10), gray)
 	men4 = msg("Selecione um controle", "freesansbold.ttf", 20, (botao_controles[0]+60, botao_controles[1]-30), green)
 
 	while True:
@@ -36,6 +37,7 @@ def game_intro():
 		men.message_display()
 		men2.message_display()
 		men3.message_display()
+		men5.message_display()
 		if controle==[0,0,0,0]:
 			men4.message_display()
 		if controle==[1,0,0,0] or controle==[0,1,0,0] or controle==[0,0,1,0] or controle==[0,0,0,1]:
