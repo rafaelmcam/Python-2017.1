@@ -2,6 +2,8 @@ Bibliotecas utilizadas:
 
 Pygame
 cv2 (OPEN-CV)
+
+
 ===========================================================================================
 
 SELECIONE O CONTROLE DESEJADO NO BOTÃO "CONTROLES"
