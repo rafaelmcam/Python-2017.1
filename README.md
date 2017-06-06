@@ -4,6 +4,16 @@ Diógenes Wallis
 
 Rafael Campello
 
+===========================================================================================
+
+Versão (06/05)
+
+Corrigido todos os bugs de colisões, bem como detecção do lado em que a colisão ocorreu (usando equações de retas das quinas do retângulo)
+
+Corrigido detecção de 2 colisões com o mesmo bloco por vez
+
+Corrido problemas com fps/velocidade da bola, devido a bola "entrar" dentro do bloco
+
 
 ===========================================================================================
 
