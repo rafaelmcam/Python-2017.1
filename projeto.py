@@ -12,7 +12,7 @@ pygame.init()
 pygame.display.set_caption('Projeto Python 2017.1')
 clock = pygame.time.Clock()
 
-controle = [0, 0, 0, 1]
+controle = [1, 0, 0, 0]
 seletor = [1, 0, 0, 0]
 
 def game_intro():
@@ -139,6 +139,7 @@ def game_loop():
 	font=pygame.font.SysFont(None, 25)
 	global phat
 	score=0
+	lst_col = time.time()
 
 	if controle == [0, 0, 0, 1]:
 		cap = cv2.VideoCapture(0)
@@ -155,15 +156,17 @@ def game_loop():
 			game_intro()
 
 	player = jogador()
-	ball = bola([int(player.pos[0]+100), int(player.pos[1]-player.height-200)], black)
+	ball = bola(pos_inicial_bola, black)
 
 
 	block_list = []
 	for i in range(qblocosx):
 		for j in range(qblocosy):
-			block_list.append(blocos(black, 60+i*70, 60+j*40))
+			block_list.append(blocos(60+i*70, 60+j*60, 4))
 
 	mencrash = msg("Você Perdeu!", "freesansbold.ttf", 100)
+
+	last = [0, 0]
 
 	while True:
 		for event in pygame.event.get():
@@ -211,8 +214,8 @@ def game_loop():
 
 			element = cv2.getStructuringElement(cv2.MORPH_RECT,(15,15))
 			mask = cv2.erode(mask,element, iterations=2)
-			mask = cv2.dilate(mask,element,iterations=2)
-			mask = cv2.erode(mask,element)
+			#mask = cv2.dilate(mask,element,iterations=2)
+			#mask = cv2.erode(mask,element)
 
 			frame, contornos, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -245,10 +248,15 @@ def game_loop():
 
 		score = qblocosx*qblocosy-len(block_list)
 
-		if ball.pos[0] > display_width - ball.raio or ball.pos[0] < ball.raio:
-			ball.vel[0] = -ball.vel[0]
+		if ball.pos[0] > display_width - ball.raio:
+			ball.vel[0] = -abs(ball.vel[0])
+			last = [0, 0]
+		elif ball.pos[0] < ball.raio:
+			ball.vel[0] = abs(ball.vel[0])
+			last = [0, 0]
 		elif ball.pos[1] < ball.raio:
-			ball.vel[1] = - ball.vel[1]
+			ball.vel[1] =  abs(ball.vel[1])
+			last = [0, 0]
 		elif ball.pos[1] + ball.raio > display_height:
 			rec = c_recordes(controle, score)
 			rec.app_recorde()
@@ -260,17 +268,40 @@ def game_loop():
 			block_list = []
 			for i in range(qblocosx):
 				for j in range(qblocosy):
-					block_list.append(blocos(black, 60+i*70, 60+j*40))
+					block_list.append(blocos(60+i*70, 60+j*40, 4))
 
-
-		if collision(player.pos[0], player.pos[1], player.width, player.height, ball.pos[0], ball.pos[1], ball.raio):
-			ball.vel[1] = -ball.vel[1]
-			ball.vel[0] += int((ball.pos[0]-(player.pos[0] + player.width/2))/16)
-
+		if coli(player.pos[0], player.pos[1], player.width, player.height, ball.pos[0], ball.pos[1], ball.raio):
+			ball.vel[1] = -abs(ball.vel[1])
+			ball.vel[0] += int((ball.pos[0]-(player.pos[0] + player.width/2))/30)
+			last = [0, 0]
+			'''MUDANÇA DA VEL X DEPENDER DA VELOCIDADE DO PLAYER E NÃO DA POSIÇÃO QUE TOCA NO PLAYER'''
 		for bloco in block_list:
-			if collision(bloco.x, bloco.y, bloco.width, bloco.height, ball.pos[0], ball.pos[1], ball.raio):
-				ball.vel[1] = -ball.vel[1]
-				block_list.remove(bloco)
+			if coli(bloco.x, bloco.y, bloco.width, bloco.height, ball.pos[0], ball.pos[1], ball.raio) and last!=[bloco.x, bloco.y]:
+				if bloco.tupla_bol(ball.pos[0], ball.pos[1]) == (False, False):
+					ball.vel[1] = abs(ball.vel[1])
+					bloco.vida -= 1
+					print("colidiu em baixo")
+				elif bloco.tupla_bol(ball.pos[0], ball.pos[1]) == (True, True):
+					ball.vel[1] = -abs(ball.vel[1])
+					bloco.vida -= 1
+					print("colidiu em cima")
+				elif bloco.tupla_bol(ball.pos[0], ball.pos[1]) == (True, False):
+					ball.vel[0] = abs(ball.vel[0])
+					bloco.vida -= 1
+					print("colidiu do lado direito")
+				elif bloco.tupla_bol(ball.pos[0], ball.pos[1]) == (False, True):
+					ball.vel[0] = -abs(ball.vel[0])
+					bloco.vida -= 1
+					print("colidiu do lado esquerdo")
+				'''FAZER CONDIÇÕES IF PARA VER DE ONDA A BOLA ESTÁ VINDO E USAR ABS DIFERENTE PARA CADA UM'''
+				'''FAZER DETECÇÃO DE COLISÃO HORIZONTAL E MUDAR TAMBEM A VELOCIDADE X!!!'''
+				bloco.color=bloco.define_color()
+				if bloco.vida == 0:
+					block_list.remove(bloco)
+				
+				print("Anterior: {}, Bloco Atual: {}".format(last, [bloco.x, bloco.y]))
+				last = [bloco.x, bloco.y]
+				#time.sleep(0.1)
 
 
 		if player.pos[0] > display_width-player.width:
@@ -286,7 +317,7 @@ def game_loop():
 		ball.draw()
 
 		pygame.display.update()
-		clock.tick(60)
+		clock.tick(60*3)
 
 game_intro()
 pygame.quit()
