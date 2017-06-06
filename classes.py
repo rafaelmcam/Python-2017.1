@@ -11,16 +11,36 @@ from constantes import *
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 
 class blocos:
-    def __init__(self, color=black, x=100, y=100):
-        self.color=color
+    def __init__(self, x=100, y=100, vida = 1):
+        self.vida = vida
+        self.color=self.define_color()
         self.x=x
         self.y=y
         self.width=50
         self.height=15
         self.font=pygame.font.SysFont(None, 25)
 
+    def eqs(self, x):
+        return (self.y + (self.height/self.width)*(x-self.x)), (self.y+self.height - (self.height/self.width)*(x-self.x))
+        
+    def tupla_bol(self, x, y):
+        tupla = (self.eqs(x)[0]>y,self.eqs(x)[1]>y)
+        return tupla
+        if tupla == (True, True):
+            return "Cima"
+        elif tupla == (False, False):
+            return "Baixo"
+        elif tupla == (True, False):
+            return "Direita"
+        elif tupla == (False, True):
+            return "Esquerda"
+
     def draw_block(self):
         pygame.draw.rect(gameDisplay, self.color, [self.x, self.y, self.width, self.height])
+
+    def define_color(self):
+        d = {0:None, 1: black, 2:green, 3:blue, 4:white}
+        return d[self.vida]
     
 class jogador:
     def __init__(self):
@@ -38,10 +58,10 @@ class jogador:
         #gameDisplay.blit(text, (0, 10))
 
 class bola:
-	def __init__(self, pos, color=white, vel=[0, 4]):
+	def __init__(self, pos, color=white, vel=vel_inicial_bola):
 		self.color=color
 		self.pos=pos
-		self.raio=10
+		self.raio = raio_bola
 		self.vel=vel
 
 	def draw(self):
@@ -127,7 +147,7 @@ class c_recordes:
         try:
             self.recs = []
             with open(self.string, "rt") as f:
-                for self.lin in islice(f, 30):
+                for self.lin in islice(f, 100):
                     self.aux=int(self.lin[9:14])
                     self.data = self.lin[18:43]
                     self.recs.append((self.aux, self.data))
@@ -135,23 +155,8 @@ class c_recordes:
         except:
             print("Erro ao ler o recorde!\n")
 
-#INTERNET TEMPORÁRIO
-def collision(rleft, rtop, width, height,   
-              center_x, center_y, radius):  
-    
-    rright, rbottom = rleft + width, rtop + height
 
-    cleft, ctop     = center_x-radius, center_y-radius
-    cright, cbottom = center_x+radius, center_y+radius
-
-
-    if rright < cleft or rleft > cright or rbottom < ctop or rtop > cbottom:
-        return False  
-
-    for x in (rleft, rleft+width):
-        for y in (rtop, rtop+height):
-            if math.hypot(x-center_x, y-center_y) <= radius:
-                return True
-    if rleft <= center_x <= rright and rtop <= center_y <= rbottom:
-        return True 
-    return False
+def coli (recx, recy, recwidth, recheight, ballx, bally, ballraio):
+	Dx =  ballx - max(recx, min(ballx, recx+recwidth))
+	Dy =  bally - max(recy, min(bally, recy+recheight))
+	return (Dx*Dx+Dy*Dy < ballraio*ballraio)
