@@ -26,6 +26,7 @@ class blocos:
     def tupla_bol(self, x, y):
         tupla = (self.eqs(x)[0]>y,self.eqs(x)[1]>y)
         return tupla
+'''
         if tupla == (True, True):
             return "Cima"
         elif tupla == (False, False):
@@ -34,6 +35,7 @@ class blocos:
             return "Direita"
         elif tupla == (False, True):
             return "Esquerda"
+	    '''
 
     def draw_block(self):
         pygame.draw.rect(gameDisplay, self.color, [self.x, self.y, self.width, self.height])
