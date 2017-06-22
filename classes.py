@@ -26,7 +26,6 @@ class blocos:
     def tupla_bol(self, x, y):
         tupla = (self.eqs(x)[0]>y,self.eqs(x)[1]>y)
         return tupla
-'''
         if tupla == (True, True):
             return "Cima"
         elif tupla == (False, False):
@@ -35,7 +34,6 @@ class blocos:
             return "Direita"
         elif tupla == (False, True):
             return "Esquerda"
-	    '''
 
     def draw_block(self):
         pygame.draw.rect(gameDisplay, self.color, [self.x, self.y, self.width, self.height])
@@ -46,23 +44,44 @@ class blocos:
     
 class jogador:
     def __init__(self):
-        self.vel = 0
+        self.velmouse = 0
+        self.velteclado = 0
+        self.velds4 = 0
+        self.velcam = 0
         self.width=80
         self.height=20
         self.color=black
         self.pos = [display_width*0.45, display_height-2*self.height]
+        self.x = self.pos[0]
+        self.y = self.pos[1]
 
     def draw(self):
         pygame.draw.rect(gameDisplay, self.color, [self.pos[0], self.pos[1], self.width, self.height])
+
+    def eqs(self, x):
+        return (self.y + (self.height/self.width)*(x-self.x)), (self.y+self.height - (self.height/self.width)*(x-self.x))
+        
+    def tupla_bol(self, x, y):
+        tupla = (self.eqs(x)[0]>y,self.eqs(x)[1]>y)
+        return tupla
+        if tupla == (True, True):
+            return "Cima"
+        elif tupla == (False, False):
+            return "Baixo"
+        elif tupla == (True, False):
+            return "Direita"
+        elif tupla == (False, True):
+            return "Esquerda"
         
         #font = pygame.font.SysFont(None, 25)
        # text = font.render("Vel_x: " + str(self.vel), True, black)
         #gameDisplay.blit(text, (0, 10))
 
 class bola:
-	def __init__(self, pos, color=white, vel=vel_inicial_bola):
+	def __init__(self, pos, color=white, vel=vel_inicial_bola.copy()):
 		self.color=color
 		self.pos=pos
+		self.posanterior = []
 		self.raio = raio_bola
 		self.vel=vel
 
@@ -149,7 +168,7 @@ class c_recordes:
         try:
             self.recs = []
             with open(self.string, "rt") as f:
-                for self.lin in islice(f, 100):
+                for self.lin in islice(f, 300):
                     self.aux=int(self.lin[9:14])
                     self.data = self.lin[18:43]
                     self.recs.append((self.aux, self.data))
@@ -162,3 +181,11 @@ def coli (recx, recy, recwidth, recheight, ballx, bally, ballraio):
 	Dx =  ballx - max(recx, min(ballx, recx+recwidth))
 	Dy =  bally - max(recy, min(bally, recy+recheight))
 	return (Dx*Dx+Dy*Dy < ballraio*ballraio)
+
+
+#pygame.image.load retorna uma surface, usa-se pygame.surfarray.pixels3d para transformar em um array parecido com o scipy-image
+def color_surface(surface, red, green, blue):
+    arr = pygame.surfarray.pixels3d(surface)
+    arr[:,:,0] += red
+    arr[:,:,1] += green
+    arr[:,:,2] += blue
