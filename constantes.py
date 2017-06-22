@@ -35,8 +35,9 @@ botao_teclado2 = (260, 170, 140, 50)
 botao_ds42 = (450, 170, 140, 50)
 botao_camera2 = (640, 170, 140, 50)
 
-vel_inicial_bola = [0, 1]
+vel_inicial_bola = [0, 8]
 pos_inicial_bola = [420, 320]
-raio_bola = 6
 
-time_debug = 0.05
+velx_max_bola = 2
+
+raio_bola = 6
