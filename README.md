@@ -31,6 +31,7 @@ Melhorias Estéticas (design dos butões, fundo, música, telas)
 
 ===========================================================================================
 
+Baixar o arquivo zipado devido às imagens e música.
 
 Bibliotecas alternativas utilizadas:
 
