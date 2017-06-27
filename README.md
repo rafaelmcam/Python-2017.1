@@ -6,6 +6,18 @@ Rafael Campello
 
 ===========================================================================================
 
+Baixar o arquivo zipado devido às imagens e música.
+
+Bibliotecas alternativas utilizadas:
+
+-Pygame (Obrigatória)
+
+-cv2 (OPEN-CV) (Para utilizar o controle via câmera)
+
+-ds4drv (Para utilizar o controle via bluetooth)
+
+===========================================================================================
+
 Versão (06/05)
 
 Corrigido bugs de colisões, bem como detecção do lado em que a colisão ocorreu (usando equações de retas das quinas do retângulo)
@@ -27,18 +39,6 @@ DS4 é controlado por joystick e não mais pelo PAD
 Modificado o controle do jogador com o OPENCV
 
 Melhorias Estéticas (design dos butões, fundo, música, telas)
-
-
-===========================================================================================
-
-Baixar o arquivo zipado devido às imagens e música.
-
-Bibliotecas alternativas utilizadas:
-
--Pygame (Obrigatória)
--cv2 (OPEN-CV) (Para utilizar o controle via câmera)
--ds4drv (Para utilizar o controle via bluetooth)
-
 
 ===========================================================================================
 
