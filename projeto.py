@@ -13,7 +13,7 @@ pygame.init()
 pygame.display.set_caption('Projeto Python 2017.1')
 clock = pygame.time.Clock()
 
-controle = [1, 0, 0, 0]
+controle = [0, 1, 0, 0]
 seletor = [1, 0, 0, 0]
 
 def game_intro():
@@ -248,9 +248,11 @@ def game_loop():
 			if melhorContorno is not None and cArea>2000:
 				x,y,w,h = cv2.boundingRect(melhorContorno)
 				cv2.rectangle(frame, (x,y),(x+w,y+h), (255,255, 255), 5)
+				anterior = player.pos[0]
 				player.pos[0] = int((1270-x-(w/2))*(800/1270))
 
-			player.pos[0] += player.velcam
+
+			player.velcam = player.pos[0] - anterior
 			player.x = player.pos[0]
 
 		if controle == [0, 1, 0, 0]:
@@ -272,6 +274,20 @@ def game_loop():
 
 		men = msg("Score: {}".format(score), "freesansbold.ttf", 20, (45, 20), black)
 		men2 = msg("Stage: {}".format(stage+1), "freesansbold.ttf", 20, (display_width-45, 20), black)
+
+
+		if player.pos[0] > display_width-player.width:
+			player.pos[0] = display_width-player.width
+			player.velmouse = 0
+			player.velteclado = 0
+			player.velds4 = 0
+			player.velcam = 0
+		elif player.pos[0] < 0:
+			player.pos[0] = 0
+			player.velmouse = 0
+			player.velteclado = 0
+			player.velds4 = 0
+			player.velcam = 0
 
 		if ball.pos[0] > display_width - ball.raio:
 			ball.vel[0] = -abs(ball.vel[0])
@@ -353,7 +369,7 @@ def game_loop():
 
 
 		if block_list == []:
-			color_surface(background, 30, 0, 0)
+			color_surface(background, 20, 0, 0)
 			stage += 1
 			if stage>=20:
 				print("Limite máximo de stage, tirar depois")
@@ -364,13 +380,6 @@ def game_loop():
 				block_list = [blocos(60+i*70, 60+j*60, 4)for i in range(qblocosx) for j in range (qblocosy)]
 			else:
 				block_list = [blocos(60+i*70, 60+j*60, 1+stage)for i in range(qblocosx) for j in range (qblocosy)]
-
-
-		#if player.pos[0] > display_width-player.width:
-		#	player.pos[0] = display_width-player.width
-		#elif player.pos[0] < 0:
-		#	player.pos[0] = 0
-
 
 		gameDisplay.blit(background, (0, 0))
 
