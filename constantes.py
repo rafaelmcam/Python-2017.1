@@ -1,3 +1,5 @@
+import random
+
 display_width = 800
 display_height = 600
 
@@ -35,9 +37,11 @@ botao_teclado2 = (260, 170, 140, 50)
 botao_ds42 = (450, 170, 140, 50)
 botao_camera2 = (640, 170, 140, 50)
 
-vel_inicial_bola = [0, 8]
-pos_inicial_bola = [420, 320]
+vel_inicial_bola = [0, 4]
 
-velx_max_bola = 2
+
+pos_inicial_bola = [random.randint(50, 750), 320]
+
+velx_max_bola = 4
 
 raio_bola = 6
