@@ -40,6 +40,10 @@ Modificado o controle do jogador com o OPENCV
 
 Melhorias Estéticas (design dos butões, fundo, música, telas)
 
+Versão (01/07)
+
+Adicionado Power-Ups ao jogo (1.vida, 2.aumento de tamanho da barra e 3.ignorar colisoes)
+
 ===========================================================================================
 
 SELECIONE O CONTROLE DESEJADO NO BOTÃO "CONTROLES"
