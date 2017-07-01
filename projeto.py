@@ -10,10 +10,24 @@ from classes import *
 
 pygame.init()
 
+
+
+#
+global life_actual
+life_actual = 1
+#
+
+life1 = pygame.image.load('life.1.png')
+mushroom = pygame.image.load('+life.png')
+star = pygame.image.load('+power.png')
+red_mushroom = pygame.image.load('+size.png')
+
+#
+
 pygame.display.set_caption('Projeto Python 2017.1')
 clock = pygame.time.Clock()
 
-controle = [0, 1, 0, 0]
+controle = [1, 0, 0, 0]
 seletor = [1, 0, 0, 0]
 
 def game_intro():
@@ -155,7 +169,20 @@ def game_loop():
 	score=0
 
 	stage = 0
-
+##########################################################
+	global life_actual
+	life_ = life(life1,life_actual)
+	bloco_com_vida = random.randint(1,31)
+	bloco_com_superpoder = random.randint(1,31)
+	bloco_com_poder = random.randint(1,31)
+	superpoder = False
+	size = False
+	global cor_bola
+	cor_bola = black
+	time2 = 0
+	global contar
+	contar = 1
+##########################################################
 	background = pygame.image.load("images/back1.jpg")
 
 	if controle == [0, 0, 0, 1]:
@@ -173,12 +200,23 @@ def game_loop():
 			game_intro()
 
 	player = jogador()
-	ball = bola(pos_inicial_bola.copy(), black)
+	ball = bola(pos_inicial_bola.copy(), cor_bola)
+############################################################
+	power1=special_comb()
+	power2=special_comb()
+	power3=special_comb()
+############################################################
+	#block_list = [blocos(60+i*70, 60+j*60, 1,)for i in range(qblocosx) for j in range (qblocosy)]
 
-	block_list = [blocos(60+i*70, 60+j*60, 1)for i in range(qblocosx) for j in range (qblocosy)]
+	k = 0
+	block_list = []
+	for i in range(qblocosx):
+		for j in range(qblocosy):
+			k+=1
+			block_list.append(blocos(60+i*70, 60+j*60, 1, k))
+
 
 	mencrash = msg("Você Perdeu!", "freesansbold.ttf", 100)
-
 	last = [0, 0]
 
 	while True:
@@ -230,8 +268,8 @@ def game_loop():
 
 			element = cv2.getStructuringElement(cv2.MORPH_RECT,(15,15))
 			mask = cv2.erode(mask,element, iterations=2)
-			#mask = cv2.dilate(mask,element,iterations=2)
-			#mask = cv2.erode(mask,element)
+			mask = cv2.dilate(mask,element,iterations=2)
+			mask = cv2.erode(mask,element)
 
 			frame, contornos, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -271,8 +309,25 @@ def game_loop():
 
 		gameDisplay.fill(white)
 
+		if size==True:
+			player.width=100
 
-		men = msg("Score: {}".format(score), "freesansbold.ttf", 20, (45, 20), black)
+		time1 = time.time()
+		color_list = [black,white,green,blue,gray]
+		if superpoder == True:
+			if(time1 - time2 > 1):
+				cor_bola=color_list[contar%5]
+				contar+=1
+				time2 = time.time()
+				for i in block_list:
+					i.invencible=True
+		if contar >= 8 or contar==0:
+			cor_bola=black
+			for i in block_list:
+				i.invencible=False
+			superpoder = False
+				
+		men = msg("Score: {}".format(score), "freesansbold.ttf", 20, (display_width-45, 45), black)
 		men2 = msg("Stage: {}".format(stage+1), "freesansbold.ttf", 20, (display_width-45, 20), black)
 
 
@@ -299,18 +354,39 @@ def game_loop():
 			ball.vel[1] =  abs(ball.vel[1])
 			last = [0, 0]
 		if ball.pos[1] + ball.raio > display_height:
-			rec = c_recordes(controle, score)
-			rec.app_recorde()
-
+			life_actual-=1
 			ball.reset(pos_inicial_bola.copy(), vel_inicial_bola.copy())
-			last = [0, 0]
+			contar=0
+			superpoder=False
+			player.width, size = 80, False
+			if life_actual <= 0:
+				rec = c_recordes(controle, score)
+				rec.app_recorde()
+				last = [0, 0]
+				mencrash.crash()
+				score = 0
+				stage = 0
 
-			mencrash.crash()
-			score = 0
-			stage = 0
-			background = pygame.image.load("images/back1.jpg")
+				power1.x=0
+				power1.y=0
+				power2.x=0
+				power2.y=0
+				power3.x=0
+				power3.y=0
+			
+				power1.ativar=False
+				power2.ativar=False
+				power3.ativar=False
+				background = pygame.image.load("images/back1.jpg")
 
-			block_list = [blocos(60+i*70, 60+j*60, 1)for i in range(qblocosx) for j in range (qblocosy)]
+				#block_list = [blocos(60+i*70, 60+j*60, 1)for i in range(qblocosx) for j in range (qblocosy)]
+				
+				k = 0
+				block_list = []
+				for i in range(qblocosx):
+					for j in range(qblocosy):
+						k+=1
+						block_list.append(blocos(60+i*70, 60+j*60, 1, k))
 
 		if coli(player.pos[0], player.pos[1], player.width, player.height, ball.pos[0], ball.pos[1], ball.raio) and last!=[-1,-1]:
 			last = [-1, -1]
@@ -338,8 +414,48 @@ def game_loop():
 				print("colidiu do lados esquedo do jogador")
 			'''checar também 2 colisões aqui?!'''
 			'''MUDANÇA DA VEL X DEPENDER DA VELOCIDADE DO PLAYER E NÃO DA POSIÇÃO QUE TOCA NO PLAYER'''
+##################################################################################			
+		if power1.ativar==True:		
+			if coli(player.pos[0], player.pos[1], player.width, player.height, power1.x+17, power1.y+18, 5) and power1.ativar==True:
+				life_actual+=1
+				power1.ativar=False
+				last = [0, 0]
+
+		if power2.ativar==True:		
+			if coli(player.pos[0], player.pos[1], player.width, player.height, power2.x+17, power2.y+18, 5) and power2.ativar==True:
+				power2.ativar=False
+				contar=1
+				superpoder = True
+				last = [0, 0]
+
+		if power3.ativar==True:		
+			if coli(player.pos[0], player.pos[1], player.width, player.height, power3.x+17, power3.y+18, 5) and power3.ativar==True:
+				power3.ativar=False
+				size=True
+				last = [0, 0]
+
+			
 		for bloco in block_list:
 			if coli(bloco.x, bloco.y, bloco.width, bloco.height, ball.pos[0], ball.pos[1], ball.raio) and last!=[bloco.x, bloco.y]:
+				if bloco_com_vida==bloco.identity and (bloco.vida==1 or bloco.invencible == True):
+					power1.x=bloco.x
+					power1.y=bloco.y
+					power1.ativar=True
+
+				if bloco_com_superpoder==bloco.identity and (bloco.vida==1 or bloco.invencible == True):
+					power2.x=bloco.x
+					power2.y=bloco.y
+					power2.ativar=True
+
+				if bloco_com_poder==bloco.identity and (bloco.vida==1 or bloco.invencible == True):
+					power3.x=bloco.x
+					power3.y=bloco.y
+					power3.ativar=True
+					
+				if bloco.invencible == True:
+					block_list.remove(bloco)
+					score+=1
+					break
 				if bloco.tupla_bol(ball.posanterior[0], ball.posanterior[1]) == (False, False):
 					ball.vel[1] = abs(ball.vel[1])
 					bloco.vida -= 1
@@ -371,15 +487,45 @@ def game_loop():
 		if block_list == []:
 			color_surface(background, 20, 0, 0)
 			stage += 1
+			bloco_com_vida = random.randint(1,31)
+			bloco_com_superpoder = random.randint(1,31)
+			bloco_com_poder = random.randint(1,31)
+			if stage >= 1:
+				if power2.x==0 and power2.y==0:                        
+					power2.x=0
+					power2.y=0
+					power2.ativar=False
+					contar=0
+					superpoder=False
+				if power3.x==0 and power3.y==0:                        
+					power3.x=0
+					power3.y=0
+					power3.ativar=False
+					size=False
+			
 			if stage>=20:
-				print("Limite máximo de stage, tirar depois")
+				print("Limite máximo de stage")
 				rec = c_recordes(controle, score)
 				rec.app_recorde()
 				break
 			if stage >=3:
-				block_list = [blocos(60+i*70, 60+j*60, 4)for i in range(qblocosx) for j in range (qblocosy)]
+				#block_list = [blocos(60+i*70, 60+j*60, 4)for i in range(qblocosx) for j in range (qblocosy)]
+				############################################
+				k = 0
+				block_list = []
+				for i in range(qblocosx):
+					for j in range(qblocosy):
+						k+=1
+						block_list.append(blocos(60+i*70, 60+j*60, 4, k))		
+
 			else:
-				block_list = [blocos(60+i*70, 60+j*60, 1+stage)for i in range(qblocosx) for j in range (qblocosy)]
+				#block_list = [blocos(60+i*70, 60+j*60, 1+stage)for i in range(qblocosx) for j in range (qblocosy)]
+				k = 0
+				block_list = []
+				for i in range(qblocosx):
+					for j in range(qblocosy):
+						k+=1
+						block_list.append(blocos(60+i*70, 60+j*60, stage+1, k))
 
 		gameDisplay.blit(background, (0, 0))
 
@@ -390,8 +536,19 @@ def game_loop():
 		men2.message_display()
 
 		player.draw()
-		ball.draw()
+		ball.draw(cor_bola)
+		
 
+		#
+		life_.draw(life_actual)
+		if power1.ativar==True:
+			power1.draw(1,mushroom)
+		if power2.ativar==True:
+			power2.draw(1,star)
+		if power3.ativar==True:
+			power3.draw(1,red_mushroom)
+		#
+		
 		pygame.display.update()
 		clock.tick(60)
 
