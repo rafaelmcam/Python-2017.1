@@ -10,14 +10,48 @@ from constantes import *
 
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 
+
+class special_comb:
+    def __init__(self,x=0,y=0,ativar=False):
+        self.x=x
+        self.y=y
+        self.ativar=ativar
+    def draw(self,vel,imagem):
+        self.y+=vel
+        self.imagem=imagem
+        gameDisplay.blit(self.imagem,(self.x,self.y))
+        #pygame.draw.circle(gameDisplay, (0,0,0), (self.x,self.y), self.raio)
+
+class life:
+    def __init__(self,imagem,num_lifes):
+        self.imagem = imagem
+        self.l_width=5
+        self.l_height=5
+        self.num_lifes = num_lifes
+
+    def draw(self,actual):
+        self.l_width=5
+        self.l_height=5
+        self.num_lifes=actual
+        if self.num_lifes>=0:
+            for _ in range(0,self.num_lifes):
+                gameDisplay.blit(self.imagem,(self.l_width,5))
+                self.l_width+=39
+        else:
+            for _ in range(0,-self.num_lifes):
+                self.l_width-=39
+                gameDisplay.blit(self.imagem,(self.l_width,5))
+
 class blocos:
-    def __init__(self, x=100, y=100, vida = 1):
+    def __init__(self, x=100, y=100, vida = 1, identity = 0, invencible = False):
         self.vida = vida
         self.color=self.define_color()
         self.x=x
         self.y=y
         self.width=50
         self.height=15
+        self.identity=identity
+        self.invencible=invencible
         self.font=pygame.font.SysFont(None, 25)
 
     def eqs(self, x):
@@ -43,12 +77,12 @@ class blocos:
         return d[self.vida]
     
 class jogador:
-    def __init__(self):
+    def __init__(self,width=80):
         self.velmouse = 0
         self.velteclado = 0
         self.velds4 = 0
         self.velcam = 0
-        self.width=80
+        self.width=width
         self.height=20
         self.color=black
         self.pos = [display_width*0.45, display_height-2*self.height]
@@ -85,8 +119,8 @@ class bola:
 		self.raio = raio_bola
 		self.vel=vel
 
-	def draw(self):
-		pygame.draw.circle(gameDisplay, self.color, self.pos, self.raio)
+	def draw(self,color):
+		pygame.draw.circle(gameDisplay, color, self.pos, self.raio)
 
 	def reset(self, pos, vel):
 		self.pos = pos
